@@ -5,4 +5,4 @@ steps:
 images: ['gcr.io/extraction-on-demand/github.com/imduffy15/squid-docker:$SHORT_SHA']
 
 options:
-  machineType: 'N1_STANDARD_16'
+  machineType: 'N1_HIGHCPU_8'
