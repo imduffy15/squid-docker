@@ -20,11 +20,25 @@ RUN mkdir -p /tmp/squid /opt/squid && \
     CPU=$(( `nproc --all`-1 )) && \
     cd squid && \
     ./bootstrap.sh && \
-    ./configure --prefix=/opt/squid --enable-icap-client --enable-ssl --with-openssl --enable-ssl-crtd --enable-security-cert-generators=file --enable-auth --enable-basic-auth-helpers="NCSA" --with-default-user=nobody && \
+    ./configure --prefix=/opt/squid --enable-icap-client --enable-ssl --with-openssl --enable-ssl-crtd --enable-security-cert-generators=file --enable-auth --enable-basic-auth-helpers="NCSA" --with-default-user=squid &&  \
     make -j$CPU && \
     make install
 
 
 FROM debian:stretch-slim
 
+ENV PATH="/opt/squid/bin:/opt/squid/sbin:${PATH}"
+
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends openssl libnetfilter-conntrack3 libcap2 libgssapi-krb5-2 libgnutls-openssl27 libxml2 libexpat1 libatomic1 libltdl7 ca-certificates && \
+	apt-get clean && \
+	rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 COPY --from=0 /opt/squid /opt/squid
+
+RUN update-ca-certificates && \
+	addgroup --system --gid 3128 squid && \
+	adduser --system --gid 3128 --uid 3128 --shell /bin/false --home /opt/squid --disabled-password squid && \
+    chown squid:squid -R /opt/squid
+
+ENTRYPOINT ["/opt/squid/sbin/squid"]
