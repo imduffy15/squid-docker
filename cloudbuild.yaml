@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/extraction-on-demand/github.com/imduffy15/squid-docker:$SHORT_SHA', '.']
+  args: ['build', '-t', 'gcr.io/extraction-on-demand/github.com/imduffy15/squid-docker:$SHORT_SHA', '-m', '8g', '.']
 
 images: ['gcr.io/extraction-on-demand/github.com/imduffy15/squid-docker:$SHORT_SHA']
 
