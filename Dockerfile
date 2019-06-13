@@ -20,7 +20,7 @@ RUN mkdir -p /tmp/squid /opt/squid && \
     CPU=$(( `nproc --all`-1 )) && \
     cd squid && \
     ./bootstrap.sh && \
-    ./configure --prefix=/opt/squid --enable-icap-client --enable-ssl --with-openssl --enable-ssl-crtd --enable-security-cert-generators=file --enable-auth --enable-basic-auth-helpers="NCSA" --with-default-user=squid &&  \
+    ./configure --prefix=/opt/squid --enable-icap-client --enable-ssl --with-openssl --enable-ssl-crtd --enable-security-cert-generators=file --enable-auth --enable-basic-auth-helpers="NCSA" --with-default-user=squid --disable-ipv6 &&  \
     make -j$CPU && \
     make install
 
