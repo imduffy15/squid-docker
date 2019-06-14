@@ -39,9 +39,17 @@ COPY --from=0 /opt/squid /opt/squid
 RUN update-ca-certificates && \
 	addgroup --system --gid 3128 squid && \
 	adduser --system --gid 3128 --uid 3128 --shell /bin/false --home /opt/squid --disabled-password squid && \
+	echo "cache_dir ufs /opt/squid/var/cache/squid 100 16 256" >> /opt/squid/etc/squid.conf && \
+	echo "logfile_rotate 0" >> /opt/squid/etc/squid.conf && \
+	echo "cache_log stdio:/dev/stdout" >> /opt/squid/etc/squid.conf && \
+	echo "access_log stdio:/dev/stdout" >> /opt/squid/etc/squid.conf && \
+	echo "cache_store_log stdio:/dev/stdout" >> /opt/squid/etc/squid.conf && \
     chown squid:squid -R /opt/squid
 
-RUN /opt/squid/libexec/security_file_certgen -c -s /opt/squid/var/cache/ssl_db -M 4MB
+RUN /opt/squid/libexec/security_file_certgen -c -s /opt/squid/var/cache/ssl_db -M 4MB && \
+	squid -z
+
+USER squid
 
 ENTRYPOINT ["/opt/squid/sbin/squid"]
 CMD ["-NYCd", "1", "-f", "/opt/squid/etc/squid.conf"]
