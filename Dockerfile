@@ -27,7 +27,7 @@ RUN mkdir -p /tmp/squid /opt/squid && \
 
 FROM debian:stretch-slim
 
-ENV PATH="/opt/squid/bin:/opt/squid/sbin:${PATH}"
+ENV PATH="/opt/squid/libexec:/opt/squid/bin:/opt/squid/sbin:${PATH}"
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends openssl libnetfilter-conntrack3 libcap2 libgssapi-krb5-2 libgnutls-openssl27 libxml2 libexpat1 libatomic1 libltdl7 ca-certificates && \
@@ -41,4 +41,7 @@ RUN update-ca-certificates && \
 	adduser --system --gid 3128 --uid 3128 --shell /bin/false --home /opt/squid --disabled-password squid && \
     chown squid:squid -R /opt/squid
 
+RUN /opt/squid/libexec/security_file_certgen -c -s /opt/squid/var/cache/ssl_db -M 4MB
+
 ENTRYPOINT ["/opt/squid/sbin/squid"]
+CMD ["-NYCd", "1", "-f", "/opt/squid/etc/squid.conf"]
